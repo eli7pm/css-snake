@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Snake drawn and animated with CSS, driven by a few lines of JavaScript." />
+    <title>CSS Snake</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' rx='4' fill='%23596022'/><circle cx='11' cy='5' r='1.6' fill='%23f3ecdc'/></svg>" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game" data-state="ready" style="--speed: 140ms">
+      <header class="hud">
+        <h1>CSS Snake</h1>
+        <p class="score" data-score="0" data-best="0"></p>
+      </header>
+
+      <div class="board" role="img" aria-label="Snake board">
+        <div class="food"></div>
+        <button class="overlay" type="button" aria-label="Start or resume"></button>
+      </div>
+
+      <p class="status" aria-live="polite"></p>
+
+      <nav class="pad" aria-label="Direction controls">
+        <button type="button" data-dir="up" aria-label="Up"></button>
+        <button type="button" data-dir="left" aria-label="Left"></button>
+        <button type="button" data-dir="right" aria-label="Right"></button>
+        <button type="button" data-dir="down" aria-label="Down"></button>
+      </nav>
+
+      <footer class="help">Arrow keys or WASD to move · Space to pause · Swipe on phones</footer>
+    </main>
+    <script src="snake.js"></script>
+  </body>
+</html>
