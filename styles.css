@@ -283,6 +283,11 @@ h1 {
   color: var(--muted);
 }
 
+.help a {
+  color: var(--burgundy);
+  text-underline-offset: 3px;
+}
+
 @media (pointer: coarse) {
   .pad {
     display: grid;
@@ -300,7 +305,7 @@ h1 {
     content: "Game over\a Tap to play again";
   }
 
-  .help {
+  .keys {
     display: none;
   }
 }

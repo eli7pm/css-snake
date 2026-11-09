@@ -2,7 +2,9 @@
 
 Snake drawn and animated with CSS. JavaScript keeps the game state and handles input, and that's it: about 150 lines, no libraries, no build step.
 
-Open `index.html` in a browser to play.
+Play it at **[eli7pm.me/snake](https://eli7pm.me/snake/)**, or open `index.html` in a browser. There's nothing to install or build.
+
+The portfolio's deploy copies these three files to `/snake/`, so a push here goes live the next time eli7pm.me deploys.
 
 ## Controls
 
