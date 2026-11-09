@@ -1079,6 +1079,8 @@ h1 {
   border-radius: 14px;
   background: var(--card);
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .pad button::before {
@@ -1148,6 +1150,11 @@ h1 {
     margin-top: auto;
   }
 
+  .board {
+    align-self: center;
+    width: min(calc(100% - 20px), max(200px, calc(100dvh - 430px)));
+  }
+
   .pad {
     display: grid;
   }
@@ -1174,6 +1181,16 @@ h1 {
 
   .keys {
     display: none;
+  }
+}
+
+@media (pointer: coarse) and (max-height: 720px) {
+  .pad {
+    grid-template: ". up ." 46px "left . right" 46px ". down ." 46px / 46px 46px 46px;
+  }
+
+  .board {
+    width: min(calc(100% - 20px), max(200px, calc(100dvh - 380px)));
   }
 }
 
