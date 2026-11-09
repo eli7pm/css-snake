@@ -1070,9 +1070,11 @@ h1 {
 /* On-screen arrows, only on touch screens */
 .pad {
   display: none;
-  grid-template: ". up ." 56px "left . right" 56px ". down ." 56px / 56px 56px 56px;
-  justify-content: center;
-  gap: 6px;
+  grid-template: ". up ." 54px "left down right" 54px / 1fr 1fr 1fr;
+  gap: 8px;
+  width: min(100%, 340px);
+  margin-inline: auto;
+  touch-action: none;
 }
 
 .pad button {
@@ -1136,6 +1138,11 @@ h1 {
 }
 
 @media (pointer: coarse) {
+  html,
+  body {
+    overscroll-behavior: none;
+  }
+
   body {
     place-items: stretch center;
     padding-bottom: max(16px, env(safe-area-inset-bottom));
@@ -1199,7 +1206,7 @@ h1 {
 
 @media (pointer: coarse) and (max-height: 720px) {
   .pad {
-    grid-template: ". up ." 46px "left . right" 46px ". down ." 46px / 46px 46px 46px;
+    grid-template: ". up ." 46px "left down right" 46px / 1fr 1fr 1fr;
   }
 
   .board {
