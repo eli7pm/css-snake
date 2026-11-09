@@ -196,8 +196,8 @@ function render() {
 
 const HARD_FROM = 20
 const MAX_HOLES = 6
-const START_SPEED = 160
-const SPEED_STEP = 5
+const START_SPEED = 200
+const SPEED_STEP = 6
 const SPEED_EVERY = 10
 const TOP_SPEED = 120
 const speedFor = (points) => Math.max(TOP_SPEED, START_SPEED - Math.floor(points / SPEED_EVERY) * SPEED_STEP)
@@ -293,6 +293,8 @@ function squeak() {
 }
 
 let caughtTimer = null
+let carry = 0
+const overlay = document.querySelector('.overlay')
 
 function mongooseWins() {
   clearInterval(timer)
@@ -389,15 +391,15 @@ function setState(state, message = '') {
 
 const same = (a, b) => a[0] === b[0] && a[1] === b[1]
 
-function reset() {
+function reset(from = START_POINTS) {
   snake = [[9, 10], [8, 10], [7, 10]]
   dir = 'right'
   queue = []
   lastStep = 0
   previous = null
   atWall = 0
-  score.dataset.score = START_POINTS
-  speed = speedFor(START_POINTS)
+  score.dataset.score = from
+  speed = speedFor(from)
   delete game.dataset.mood
   delete game.dataset.cause
   clearTimeout(caughtTimer)
@@ -406,12 +408,12 @@ function reset() {
   holes = []
   runners.forEach((r) => r.el?.remove())
   runners = []
-  stage(START_POINTS)
+  stage(from)
   music.setMood('normal', true)
-  if (START_POINTS >= HARD_FROM) {
+  if (from >= HARD_FROM) {
     game.dataset.mood = 'sinister'
     music.setMood('sinister', true)
-    const count = Math.min(MAX_HOLES, 3 + Math.floor((START_POINTS - HARD_FROM) / 10))
+    const count = Math.min(MAX_HOLES, 3 + Math.floor((from - HARD_FROM) / 10))
     for (let i = 0; i < count; i++) addHole()
   }
   apple = newApple()
@@ -517,6 +519,9 @@ function over(cause) {
   if (cause !== 'mongoose' || !playLaugh()) failSound()
   game.classList.remove('edge', 'rattling')
   const points = Number(score.dataset.score)
+  carry = points
+  if (points > 0) overlay.dataset.carry = points
+  else delete overlay.dataset.carry
   if (points > best && !START_POINTS) {
     best = points
     score.dataset.best = best
@@ -530,7 +535,7 @@ function play() {
   audio?.resume()
   if (game.dataset.state === 'playing' || game.dataset.state === 'caught') return
   if (game.dataset.state !== 'paused') {
-    reset()
+    reset(game.dataset.state === 'over' ? Math.max(START_POINTS, carry) : START_POINTS)
     music.reset()
   }
   setState('playing')
@@ -546,8 +551,10 @@ function pause() {
   setState('paused', 'Paused')
 }
 
+const REDO_WINDOW = 0.65
+
 function redoLastStep(to) {
-  if (queue.length || !previous || performance.now() - lastStep > speed * 0.4) return false
+  if (queue.length || !previous || performance.now() - lastStep > speed * REDO_WINDOW) return false
   const redo = attempt(previous, to)
   if (redo.blocked) return false
   snake = redo.cells
@@ -580,6 +587,7 @@ function turn(to) {
 }
 
 function restart() {
+  carry = 0
   clearInterval(timer)
   music.stop()
   setState('ready')

@@ -9,6 +9,7 @@ The portfolio's deploy copies these three files to `/snake/`, so a push here goe
 ## Controls
 
 - **Keyboard:** arrow keys or WASD to move, Space or Enter to start, pause and resume. Clicking a button doesn't take keyboard focus, so Space always pauses.
+- **After losing:** Space or a tap continues from the score you lost at (speed, music, burrows and mongooses included; the snake starts at its normal length). The Restart button starts over from 0.
 - **Buttons:** play / pause, restart, music on/off with a volume slider, and sound on/off, next to the score. CSS picks the play or pause icon from `[data-state]` and the speaker or muted icon from `aria-pressed`.
 - **Phones:** swipe on the board, or use the on-screen arrows. Both react the moment you touch: arrows on touch-down, swipes as soon as your finger has moved 16px (several turns in one continuous swipe work too). Tap the board to pause, and tap again to resume. On touch screens the board is sized to the screen's height too, so the board and the arrows fit without scrolling, and starting a game scrolls them into view.
 - The game pauses on its own when you switch tabs.
@@ -23,7 +24,7 @@ Add `?points=N` to start every game (and every Restart) at that score, for examp
 | --- | --- |
 | Board | one `repeating-conic-gradient` draws the checkerboard; a coil of concertina wire (overlapping steel loops with small razor barbs, a small inline SVG) runs around the edge through `border-image`, pushed mostly outside the board with `border-image-outset`, and running into it ends the game with "Snagged on the barbed wire" |
 | Movement | each piece sits at `--x` / `--y`, placed with `transform`, so a linear `transition` as long as one step slides it to the next cell without stopping |
-| Speed | `--speed` sets the slide duration: 160 ms per step, 5 ms faster every 10 points, down to 120 ms |
+| Speed | `--speed` sets the slide duration: 200 ms per step, 6 ms faster every 10 points, down to 120 ms |
 | Walls | the head wobbles and turns reddish while the snake waits at a wall |
 | Body | each piece is a capsule from its own square to the piece in front of it, rotated by `--a`, so the pieces join into one tube with rounded elbows; the rotation is animated over a step, which keeps corners smooth while the snake turns. JS sets `--a` (kept continuous so nothing spins the long way), `--i` and `--len`; CSS tapers the last four pieces and stacks pieces so the head side is on top. Scales are radial-gradient rings in a darker green that turn with the body |
 | Burrows and mongoose | each hole is a stack of radial gradients (dirt rim, dark hole, glinting eyes animated with `background-size`); from 30 points a `data-size` attribute set by the game (small, growing, big) drives a `scale` transition and a rumble animation, so what you see matches the danger zone. The mongoose is a silhouette from SVG Repo used as an inline SVG `clip-path`, painted entirely with CSS gradients (grizzled fur, belly, eye patch, ear, nose). In a burrow, a small front-facing head (a pointed `clip-path` face with low side ears, dark eye patches, a pale muzzle and a dark nose) springs out with a bouncy `transition`; from 40 points mongooses trot across the board: running left or right they use the side-on silhouette (flipped to face their direction); running up or down they're drawn from above (a long body with a darker spine, a pointed head with small ears, paddling legs and a wagging tail), turned to face their direction |
@@ -42,7 +43,7 @@ Add `?points=N` to start every game (and every Restart) at that score, for examp
 
 - Keeps the snake as a list of cells, moves it on a timer, and checks for walls, itself and food.
 - Writes the results back as CSS variables (`--x`, `--y`, `--angle`, `--speed`) and data attributes (`data-state`, `data-score`, `data-best`).
-- Turns line up with what you see: the snake is drawn sliding toward its next square, so an arrow pressed in the first 40% of a step redoes that step in the new direction (the slide curves toward the corrected square). Later presses apply on the next step. Up to two turns queue so fast presses aren't lost, and a direct reversal is ignored.
+- Turns line up with what you see: the snake is drawn sliding toward its next square, so an arrow or on-screen button pressed in the first 65% of a step redoes that step in the new direction (the slide curves toward the corrected square). Later presses apply on the next step. Up to two turns queue so fast presses aren't lost, and a direct reversal is ignored.
 - Heading into the wire doesn't end the game right away: the snake is held at the edge for two steps, and a turn during that time moves it away immediately instead of waiting for the next step.
 - Makes every sound with the Web Audio API (no audio files). Browsers only allow sound after you interact, so it starts with the first game.
   - **Eating:** a short two-note chirp.

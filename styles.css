@@ -706,17 +706,6 @@ h1 {
   }
 }
 
-/* A quick flash when the snake eats */
-.ate .board {
-  animation: flash 260ms ease-out;
-}
-
-@keyframes flash {
-  from {
-    box-shadow: 0 0 0 6px color-mix(in oklch, var(--olive), transparent 55%);
-  }
-}
-
 /* Start, pause and game-over screens come from the data-state attribute */
 .overlay {
   position: absolute;
@@ -757,12 +746,24 @@ h1 {
   content: "Game over\a Press Space or tap to play again";
 }
 
+[data-state="over"] .overlay[data-carry]::after {
+  content: "Game over\a Press Space or tap to continue at " attr(data-carry) " points";
+}
+
 [data-state="over"][data-cause="mongoose"] .overlay::after {
   content: "The mongoose got you\a Press Space or tap to play again";
 }
 
+[data-state="over"][data-cause="mongoose"] .overlay[data-carry]::after {
+  content: "The mongoose got you\a Press Space or tap to continue at " attr(data-carry) " points";
+}
+
 [data-state="over"][data-cause="wire"] .overlay::after {
   content: "Snagged on the barbed wire\a Press Space or tap to play again";
+}
+
+[data-state="over"][data-cause="wire"] .overlay[data-carry]::after {
+  content: "Snagged on the barbed wire\a Press Space or tap to continue at " attr(data-carry) " points";
 }
 
 [data-state="playing"] .overlay,
@@ -1171,12 +1172,24 @@ h1 {
     content: "Game over\a Tap to play again";
   }
 
+  [data-state="over"] .overlay[data-carry]::after {
+    content: "Game over\a Tap to continue at " attr(data-carry) " points";
+  }
+
   [data-state="over"][data-cause="mongoose"] .overlay::after {
     content: "The mongoose got you\a Tap to play again";
   }
 
+  [data-state="over"][data-cause="mongoose"] .overlay[data-carry]::after {
+    content: "The mongoose got you\a Tap to continue at " attr(data-carry) " points";
+  }
+
   [data-state="over"][data-cause="wire"] .overlay::after {
     content: "Snagged on the barbed wire\a Tap to play again";
+  }
+
+  [data-state="over"][data-cause="wire"] .overlay[data-carry]::after {
+    content: "Snagged on the barbed wire\a Tap to continue at " attr(data-carry) " points";
   }
 
   .keys {
@@ -1201,7 +1214,6 @@ h1 {
   }
 
   .food::before,
-  .ate .board,
   .edge .head::before,
   .hole::before,
   .segment.tail::after,
