@@ -8,7 +8,7 @@ const food = document.querySelector('.food')
 const score = document.querySelector('.score')
 const status = document.querySelector('.status')
 
-let snake, dir, queue, apple, timer, speed, lastStep, previous, atWall
+let snake, dir, queue, apple, speed, lastStep, previous, atWall
 let best = Number(safe(() => localStorage.getItem('css-snake-best'))) || 0
 score.dataset.best = best
 
@@ -297,7 +297,7 @@ let carry = 0
 const overlay = document.querySelector('.overlay')
 
 function mongooseWins() {
-  clearInterval(timer)
+  stopTimer()
   music.stop()
   squeak()
   setState('caught', 'The mongoose caught the snake')
@@ -423,9 +423,28 @@ function reset(from = START_POINTS) {
   render()
 }
 
+let loopId = 0
+let nextStepAt = 0
+
+function stopTimer() {
+  cancelAnimationFrame(loopId)
+  loopId = 0
+}
+
 function restartTimer() {
-  clearInterval(timer)
-  if (game.dataset.state === 'playing') timer = setInterval(tick, speed)
+  stopTimer()
+  if (game.dataset.state !== 'playing') return
+  nextStepAt = performance.now() + speed
+  loopId = requestAnimationFrame(loop)
+}
+
+function loop(now) {
+  const id = loopId
+  if (now >= nextStepAt) {
+    nextStepAt = now - nextStepAt > speed ? now + speed : nextStepAt + speed
+    tick()
+  }
+  if (loopId === id && game.dataset.state === 'playing') loopId = requestAnimationFrame(loop)
 }
 
 function attempt(from, direction) {
@@ -514,7 +533,7 @@ function tick() {
 
 function over(cause) {
   if (cause) game.dataset.cause = cause
-  clearInterval(timer)
+  stopTimer()
   music.stop()
   if (cause !== 'mongoose' || !playLaugh()) failSound()
   game.classList.remove('edge', 'rattling')
@@ -541,12 +560,13 @@ function play() {
   setState('playing')
   music.start()
   restartTimer()
-  if (window.matchMedia('(pointer: coarse)').matches) document.querySelector('.pad').scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  const pad = document.querySelector('.pad')
+  if (window.matchMedia('(pointer: coarse)').matches && pad.getBoundingClientRect().bottom > innerHeight) pad.scrollIntoView({ block: 'nearest' })
 }
 
 function pause() {
   if (game.dataset.state !== 'playing') return
-  clearInterval(timer)
+  stopTimer()
   music.stop()
   setState('paused', 'Paused')
 }
@@ -567,7 +587,17 @@ function redoLastStep(to) {
 }
 
 function turn(to) {
-  if (game.dataset.state !== 'playing') return play()
+  if (game.dataset.state !== 'playing') {
+    if (game.dataset.state === 'caught') return
+    play()
+    const [cx, cy] = DIRS[dir]
+    const [nx, ny] = DIRS[to]
+    if (game.dataset.state === 'playing' && !queue.length && (cx + nx !== 0 || cy + ny !== 0)) {
+      dir = to
+      render()
+    }
+    return
+  }
   const last = queue.at(-1) ?? dir
   const [lx, ly] = DIRS[last]
   const [tx, ty] = DIRS[to]
@@ -588,7 +618,7 @@ function turn(to) {
 
 function restart() {
   carry = 0
-  clearInterval(timer)
+  stopTimer()
   music.stop()
   setState('ready')
   play()

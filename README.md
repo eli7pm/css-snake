@@ -11,7 +11,7 @@ The portfolio's deploy copies these three files to `/snake/`, so a push here goe
 - **Keyboard:** arrow keys or WASD to move, Space or Enter to start, pause and resume. Clicking a button doesn't take keyboard focus, so Space always pauses.
 - **After losing:** Space or a tap continues from the score you lost at (speed, music, burrows and mongooses included; the snake starts at its normal length). The Restart button starts over from 0.
 - **Buttons:** play / pause, restart, music on/off with a volume slider, and sound on/off, next to the score. CSS picks the play or pause icon from `[data-state]` and the speaker or muted icon from `aria-pressed`.
-- **Phones:** swipe on the board, or use the on-screen arrows. Both react the moment you touch: arrows on touch-down, swipes as soon as your finger has moved 16px (several turns in one continuous swipe work too). Tap the board to pause, and tap again to resume. On touch screens the board is sized to the screen's height too, so the board and the arrows fit without scrolling, and starting a game scrolls them into view.
+- **Phones:** swipe on the board, or use the on-screen arrows (laid out like a keyboard's arrow keys: ↑ on top, ← ↓ → below, wide enough for one thumb or two hands). The first press both starts the game and sets the direction. The page doesn't scroll or bounce under your fingers while you play. Both react the moment you touch: arrows on touch-down, swipes as soon as your finger has moved 16px (several turns in one continuous swipe work too). Tap the board to pause, and tap again to resume. On touch screens the board is sized to the screen's height too, so the board and the arrows fit without scrolling, and starting a game scrolls them into view.
 - The game pauses on its own when you switch tabs.
 
 ## Testing a score
@@ -41,7 +41,7 @@ Add `?points=N` to start every game (and every Restart) at that score, for examp
 
 ## What JS does
 
-- Keeps the snake as a list of cells, moves it on a timer, and checks for walls, itself and food.
+- Keeps the snake as a list of cells, moves it on a `requestAnimationFrame` loop (steps line up with screen frames, so they don't drift the way timers can on battery-saving devices), and checks for walls, itself and food.
 - Writes the results back as CSS variables (`--x`, `--y`, `--angle`, `--speed`) and data attributes (`data-state`, `data-score`, `data-best`).
 - Turns line up with what you see: the snake is drawn sliding toward its next square, so an arrow or on-screen button pressed in the first 65% of a step redoes that step in the new direction (the slide curves toward the corrected square). Later presses apply on the next step. Up to two turns queue so fast presses aren't lost, and a direct reversal is ignored.
 - Heading into the wire doesn't end the game right away: the snake is held at the edge for two steps, and a turn during that time moves it away immediately instead of waiting for the next step.
