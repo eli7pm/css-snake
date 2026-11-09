@@ -17,7 +17,7 @@ The portfolio's deploy copies these three files to `/snake/`, so a push here goe
 | Part | How |
 | --- | --- |
 | Board | one `repeating-conic-gradient` draws the checkerboard |
-| Movement | each piece sits at `--x` / `--y`, placed with `transform`, so a `transition` slides it to the next cell |
+| Movement | each piece sits at `--x` / `--y`, placed with `transform`, so a `transition` slides it to the next cell. The slide takes 60% of a step and eases out, so the head rests on its square before the next move and turns happen where you see it |
 | Speed | `--speed` sets the slide duration; JS lowers it every 5 points |
 | Head | eyes are two radial gradients, rotated by `--angle` to face the direction of travel |
 | Food | a radial gradient with a pulsing `scale` animation |
