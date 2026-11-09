@@ -10,7 +10,7 @@ The portfolio's deploy copies these three files to `/snake/`, so a push here goe
 
 - **Keyboard:** arrow keys or WASD to move, Space or Enter to start, pause and resume. Clicking a button doesn't take keyboard focus, so Space always pauses.
 - **Buttons:** play / pause, restart, music on/off with a volume slider, and sound on/off, next to the score. CSS picks the play or pause icon from `[data-state]` and the speaker or muted icon from `aria-pressed`.
-- **Phones:** swipe on the board (16px is enough), or use the on-screen arrows. Tap the board to pause, and tap again to resume.
+- **Phones:** swipe on the board, or use the on-screen arrows. Both react the moment you touch: arrows on touch-down, swipes as soon as your finger has moved 16px (several turns in one continuous swipe work too). Tap the board to pause, and tap again to resume. On touch screens the board is sized to the screen's height too, so the board and the arrows fit without scrolling, and starting a game scrolls them into view.
 - The game pauses on its own when you switch tabs.
 
 ## Testing a score

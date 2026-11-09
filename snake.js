@@ -536,6 +536,7 @@ function play() {
   setState('playing')
   music.start()
   restartTimer()
+  if (window.matchMedia('(pointer: coarse)').matches) document.querySelector('.pad').scrollIntoView({ block: 'nearest', behavior: 'smooth' })
 }
 
 function pause() {
@@ -616,25 +617,36 @@ soundButton.addEventListener('click', () => {
   soundButton.setAttribute('aria-pressed', soundOn)
   safe(() => localStorage.setItem('css-snake-sound', soundOn ? 'on' : 'off'))
 })
-document.querySelectorAll('[data-dir]').forEach((b) => b.addEventListener('click', () => turn(b.dataset.dir)))
+document.querySelectorAll('[data-dir]').forEach((b) => {
+  b.addEventListener('pointerdown', () => turn(b.dataset.dir))
+  b.addEventListener('click', (e) => e.detail === 0 && turn(b.dataset.dir))
+})
 
+const SWIPE = 16
 let touch = null
+let swiped = false
 let tapPausedAt = -Infinity
-board.addEventListener('pointerdown', (e) => (touch = [e.clientX, e.clientY]))
-board.addEventListener('pointerup', (e) => {
+board.addEventListener('pointerdown', (e) => {
+  touch = [e.clientX, e.clientY]
+  swiped = false
+})
+board.addEventListener('pointermove', (e) => {
   if (!touch) return
   const dx = e.clientX - touch[0]
   const dy = e.clientY - touch[1]
-  touch = null
-  if (Math.max(Math.abs(dx), Math.abs(dy)) < 16) {
-    if (game.dataset.state === 'playing') {
-      pause()
-      tapPausedAt = performance.now()
-    }
-    return
-  }
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < SWIPE) return
   turn(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : dy > 0 ? 'down' : 'up')
+  touch = [e.clientX, e.clientY]
+  swiped = true
 })
+board.addEventListener('pointerup', () => {
+  if (touch && !swiped && game.dataset.state === 'playing') {
+    pause()
+    tapPausedAt = performance.now()
+  }
+  touch = null
+})
+board.addEventListener('pointercancel', () => (touch = null))
 
 document.addEventListener('visibilitychange', () => document.hidden && pause())
 
