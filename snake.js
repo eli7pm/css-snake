@@ -8,7 +8,7 @@ const food = document.querySelector('.food')
 const score = document.querySelector('.score')
 const status = document.querySelector('.status')
 
-let snake, dir, queue, apple, timer, speed, lastStep = 0
+let snake, dir, queue, apple, timer, speed, lastStep, previous, atWall
 let best = Number(safe(() => localStorage.getItem('css-snake-best'))) || 0
 score.dataset.best = best
 
@@ -54,14 +54,20 @@ function setState(state, message = '') {
   status.textContent = message
 }
 
+const same = (a, b) => a[0] === b[0] && a[1] === b[1]
+
 function reset() {
   snake = [[9, 10], [8, 10], [7, 10]]
   dir = 'right'
   queue = []
-  speed = 140
+  speed = 160
+  lastStep = 0
+  previous = null
+  atWall = false
   apple = newApple()
   score.dataset.score = 0
   game.style.setProperty('--speed', `${speed}ms`)
+  game.classList.remove('edge')
   board.querySelectorAll('.segment').forEach((el) => el.remove())
   render()
 }
@@ -71,36 +77,55 @@ function restartTimer() {
   if (game.dataset.state === 'playing') timer = setInterval(tick, speed)
 }
 
+function attempt(from, direction) {
+  const [dx, dy] = DIRS[direction]
+  const head = [from[0][0] + dx, from[0][1] + dy]
+  const eats = same(head, apple)
+  const body = eats ? from : from.slice(0, -1)
+  if (head.some((v) => v < 0 || v >= SIZE)) return { blocked: 'wall' }
+  if (body.some((cell) => same(cell, head))) return { blocked: 'self' }
+  return { cells: [head, ...body], eats }
+}
+
+function eat() {
+  const points = Number(score.dataset.score) + 1
+  score.dataset.score = points
+  apple = newApple()
+  game.classList.remove('ate')
+  void game.offsetWidth
+  game.classList.add('ate')
+  if (points % 5 === 0 && speed > 80) {
+    speed -= 10
+    game.style.setProperty('--speed', `${speed}ms`)
+    restartTimer()
+  }
+}
+
 function tick() {
   lastStep = performance.now()
   const next = queue.shift()
   if (next) dir = next
-  const [dx, dy] = DIRS[dir]
-  const head = [snake[0][0] + dx, snake[0][1] + dy]
-  const eats = head[0] === apple[0] && head[1] === apple[1]
-  const body = eats ? snake : snake.slice(0, -1)
-  const hitsWall = head.some((v) => v < 0 || v >= SIZE)
-  if (hitsWall || body.some(([x, y]) => x === head[0] && y === head[1])) return over()
+  const move = attempt(snake, dir)
 
-  snake = [head, ...body]
-  if (eats) {
-    const points = Number(score.dataset.score) + 1
-    score.dataset.score = points
-    apple = newApple()
-    game.classList.remove('ate')
-    void game.offsetWidth
-    game.classList.add('ate')
-    if (points % 5 === 0 && speed > 70) {
-      speed -= 10
-      game.style.setProperty('--speed', `${speed}ms`)
-      restartTimer()
-    }
+  if (move.blocked === 'wall' && !atWall) {
+    atWall = true
+    previous = null
+    game.classList.add('edge')
+    return render()
   }
+  if (move.blocked) return over()
+
+  atWall = false
+  game.classList.remove('edge')
+  previous = move.eats ? null : snake
+  snake = move.cells
+  if (move.eats) eat()
   render()
 }
 
 function over() {
   clearInterval(timer)
+  game.classList.remove('edge')
   const points = Number(score.dataset.score)
   if (points > best) {
     best = points
@@ -114,7 +139,6 @@ function play() {
   if (game.dataset.state === 'playing') return
   if (game.dataset.state !== 'paused') reset()
   setState('playing')
-  lastStep = performance.now()
   restartTimer()
 }
 
@@ -124,18 +148,26 @@ function pause() {
   setState('paused', 'Paused')
 }
 
+function redoLastStep(to) {
+  if (queue.length || !previous || performance.now() - lastStep > speed * 0.4) return false
+  const redo = attempt(previous, to)
+  if (redo.blocked) return false
+  snake = redo.cells
+  dir = to
+  previous = null
+  if (redo.eats) eat()
+  render()
+  return true
+}
+
 function turn(to) {
   if (game.dataset.state !== 'playing') return play()
   const last = queue.at(-1) ?? dir
   const [lx, ly] = DIRS[last]
   const [tx, ty] = DIRS[to]
   if (to === last || (lx + tx === 0 && ly + ty === 0)) return
-  if (queue.length >= 2) return
-  queue.push(to)
-  if (queue.length === 1 && performance.now() - lastStep >= speed / 3) {
-    tick()
-    restartTimer()
-  }
+  if (redoLastStep(to)) return
+  if (queue.length < 2) queue.push(to)
 }
 
 document.addEventListener('keydown', (e) => {

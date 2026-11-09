@@ -17,8 +17,9 @@ The portfolio's deploy copies these three files to `/snake/`, so a push here goe
 | Part | How |
 | --- | --- |
 | Board | one `repeating-conic-gradient` draws the checkerboard |
-| Movement | each piece sits at `--x` / `--y`, placed with `transform`, so a `transition` slides it to the next cell. The slide takes 60% of a step and eases out, so the head rests on its square before the next move and turns happen where you see it |
-| Speed | `--speed` sets the slide duration; JS lowers it every 5 points |
+| Movement | each piece sits at `--x` / `--y`, placed with `transform`, so a linear `transition` as long as one step slides it to the next cell without stopping |
+| Speed | `--speed` sets the slide duration: 160 ms per step, 10 ms faster every 5 points, down to 80 ms |
+| Walls | the head wobbles and turns reddish while the snake waits at a wall |
 | Head | eyes are two radial gradients, rotated by `--angle` to face the direction of travel |
 | Food | a radial gradient with a pulsing `scale` animation |
 | Score | `content: attr(data-score)` and `attr(data-best)` |
@@ -31,7 +32,8 @@ The portfolio's deploy copies these three files to `/snake/`, so a push here goe
 
 - Keeps the snake as a list of cells, moves it on a timer, and checks for walls, itself and food.
 - Writes the results back as CSS variables (`--x`, `--y`, `--angle`, `--speed`) and data attributes (`data-state`, `data-score`, `data-best`).
-- Turns take effect right away: pressing an arrow moves the snake one step in the new direction and restarts the timer (at most once per third of a step, so quick zigzags don't speed it up). Up to two turns queue so fast presses aren't lost, and a direct reversal is ignored.
+- Turns line up with what you see: the snake is drawn sliding toward its next square, so an arrow pressed in the first 40% of a step redoes that step in the new direction (the slide curves toward the corrected square). Later presses apply on the next step. Up to two turns queue so fast presses aren't lost, and a direct reversal is ignored.
+- Heading into a wall doesn't end the game right away: the snake waits at the edge for one step, so there's time to turn.
 - Saves the best score in `localStorage`.
 
 ## Files

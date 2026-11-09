@@ -104,7 +104,7 @@ h1 {
 
 .segment {
   padding: 1.5px;
-  transition: transform calc(var(--speed) * 0.6) cubic-bezier(0.2, 0.7, 0.3, 1);
+  transition: transform var(--speed) linear;
 }
 
 .segment::before {
@@ -214,6 +214,21 @@ h1 {
   background: var(--burgundy);
 }
 
+/* Heading into a wall: the snake waits one step and the head wobbles */
+.edge .head::before {
+  background: color-mix(in oklch, var(--olive), var(--burgundy) 55%);
+  animation: wobble 80ms ease-in-out infinite alternate;
+}
+
+@keyframes wobble {
+  from {
+    rotate: -8deg;
+  }
+  to {
+    rotate: 8deg;
+  }
+}
+
 .status {
   position: absolute;
   width: 1px;
@@ -317,7 +332,8 @@ h1 {
   }
 
   .food::before,
-  .ate .board {
+  .ate .board,
+  .edge .head::before {
     animation: none;
   }
 }
