@@ -172,7 +172,7 @@ function turnTo(el, target) {
 }
 
 function render() {
-  const parts = board.querySelectorAll('.segment')
+  const parts = board.querySelectorAll('.segment:not(.shed)')
   for (let i = parts.length; i < snake.length; i++) {
     const el = document.createElement('div')
     el.className = 'segment'
@@ -182,7 +182,7 @@ function render() {
   }
   for (let i = snake.length; i < parts.length; i++) parts[i].remove()
   board.style.setProperty('--len', snake.length)
-  board.querySelectorAll('.segment').forEach((el, i) => {
+  board.querySelectorAll('.segment:not(.shed)').forEach((el, i) => {
     place(el, snake[i])
     el.style.setProperty('--i', i)
     el.classList.toggle('head', i === 0)
@@ -368,8 +368,52 @@ function moveRunners() {
   runners = runners.filter((r) => !r.done)
 }
 
+const GOLDEN_FROM = 40
+const SKINS = [
+  [65, 'brass'],
+  [60, 'gold-4'],
+  [55, 'gold-3'],
+  [50, 'gold-2'],
+  [40, 'gold'],
+]
+
 function stage(points) {
   game.classList.toggle('restless', points >= RESTLESS_FROM)
+  const skin = SKINS.find(([from]) => points >= from)
+  if (skin) game.dataset.skin = skin[1]
+  else delete game.dataset.skin
+}
+
+function shed() {
+  const keep = 3 + Math.floor((snake.length - 3) / 2)
+  if (keep >= snake.length) return
+  const parts = [...board.querySelectorAll('.segment:not(.shed)')]
+  for (const el of parts.slice(keep)) {
+    el.classList.remove('head', 'tail')
+    el.classList.add('shed')
+    setTimeout(() => el.remove(), 700)
+  }
+  snake = snake.slice(0, keep)
+  previous = null
+  shimmer()
+}
+
+function shimmer() {
+  if (!soundOn || !audio) return
+  const now = audio.currentTime
+  ;[88, 92, 95, 100].forEach((note, i) => {
+    const t = now + i * 0.05
+    const tone = audio.createOscillator()
+    const volume = audio.createGain()
+    tone.type = 'triangle'
+    tone.frequency.value = 440 * 2 ** ((note - 69) / 12)
+    volume.gain.setValueAtTime(0.0001, t)
+    volume.gain.exponentialRampToValueAtTime(0.08, t + 0.01)
+    volume.gain.exponentialRampToValueAtTime(0.0001, t + 0.25)
+    tone.connect(volume).connect(audio.destination)
+    tone.start(t)
+    tone.stop(t + 0.27)
+  })
 }
 
 function newApple() {
@@ -461,6 +505,7 @@ function eat() {
   const points = Number(score.dataset.score) + 1
   score.dataset.score = points
   stage(points)
+  if (points >= GOLDEN_FROM && points % 5 === 0) shed()
   if (points === HARD_FROM) {
     villainSting(0.8)
     game.dataset.mood = 'sinister'
