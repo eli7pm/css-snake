@@ -1,4 +1,20 @@
 :root {
+  --fur: oklch(0.55 0.045 65);
+  --fur-dark: oklch(0.36 0.04 50);
+  --fur-light: oklch(0.74 0.035 78);
+  --grizzle:
+    radial-gradient(circle at 30% 30%, oklch(0.6 0.04 70) 0 10%, transparent 14%) 0 0 / 4px 3px,
+    radial-gradient(circle at 70% 60%, oklch(0.5 0.045 60) 0 9%, transparent 13%) 1px 1px / 5px 4px;
+  --mongoose:
+    radial-gradient(ellipse 1.2% 4% at 99% 22%, oklch(0.18 0.02 20) 0 80%, transparent 100%),
+    radial-gradient(ellipse 1.3% 3.6% at 87.4% 13.5%, oklch(0.1 0.02 30) 0 55%, oklch(0.75 0.13 80) 65% 80%, transparent 100%),
+    radial-gradient(ellipse 3.4% 8.5% at 87% 15%, oklch(0.27 0.03 45) 0 75%, transparent 100%),
+    radial-gradient(ellipse 2.4% 6% at 83.6% 4%, oklch(0.3 0.035 45) 0 70%, transparent 100%),
+    linear-gradient(90deg, var(--fur-dark) 0 5%, transparent 13%),
+    radial-gradient(ellipse 26% 12% at 56% 55%, var(--fur-light) 0 60%, transparent 100%),
+    linear-gradient(180deg, transparent 62%, var(--fur-dark) 76%),
+    var(--grizzle),
+    var(--fur);
   --cream: oklch(0.948 0.022 88);
   --card: oklch(0.972 0.013 88);
   --ink: oklch(0.25 0.03 25);
@@ -6,7 +22,7 @@
   --line: oklch(0.86 0.025 85);
   --olive: oklch(0.47 0.085 115);
   --olive-light: oklch(0.6 0.1 115);
-  --burgundy: oklch(0.42 0.13 14);
+  --burgundy: oklch(0.38 0.13 14);
   --tile-a: oklch(0.93 0.03 105);
   --tile-b: oklch(0.9 0.035 105);
   --size: 20;
@@ -23,7 +39,7 @@
     --line: oklch(0.32 0.03 25);
     --olive: oklch(0.72 0.12 115);
     --olive-light: oklch(0.82 0.12 115);
-    --burgundy: oklch(0.72 0.13 14);
+    --burgundy: oklch(0.6 0.16 14);
     --tile-a: oklch(0.24 0.03 115);
     --tile-b: oklch(0.21 0.03 115);
     color-scheme: dark;
@@ -52,16 +68,93 @@ body {
 
 .hud {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
 }
 
 h1 {
+  white-space: nowrap;
   font: 700 1.1rem ui-monospace, monospace;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--burgundy);
+}
+
+.hud-right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px 14px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.controls button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--olive);
+  cursor: pointer;
+}
+
+.volume {
+  width: 76px;
+  accent-color: var(--olive);
+  cursor: pointer;
+}
+
+.music-btn[aria-pressed="false"] + .volume {
+  opacity: 0.45;
+}
+
+.controls svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.controls button:hover {
+  border-color: var(--olive);
+}
+
+.controls button:focus-visible {
+  outline: 2px solid var(--olive);
+  outline-offset: 2px;
+}
+
+.icon-pause,
+[data-state="playing"] .icon-play {
+  display: none;
+}
+
+[data-state="playing"] .icon-pause {
+  display: block;
+}
+
+.icon-mute,
+.sound-btn[aria-pressed="false"] .icon-waves {
+  display: none;
+}
+
+.sound-btn[aria-pressed="false"] .icon-mute,
+.music-btn[aria-pressed="false"] .icon-mute {
+  display: block;
+}
+
+.music-btn[aria-pressed="false"] svg {
+  opacity: 0.55;
 }
 
 .score {
@@ -85,16 +178,38 @@ h1 {
   position: relative;
   aspect-ratio: 1;
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 14px;
+  margin: 15px 0;
+  border: 7px solid transparent;
+  border-image-source: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='none' stroke='%2377726a' stroke-width='1.5'%3E%3Cellipse cx='-19.5' cy='11.0' rx='7.6' ry='9.2' transform='rotate%28-20 -19.5 11.0%29'/%3E%3Cellipse cx='-19.5' cy='85.0' rx='7.6' ry='9.2' transform='rotate%28-20 -19.5 85.0%29'/%3E%3Cellipse cx='11.0' cy='-19.5' rx='7.6' ry='9.2' transform='rotate%2870 11.0 -19.5%29'/%3E%3Cellipse cx='85.0' cy='-19.5' rx='7.6' ry='9.2' transform='rotate%2870 85.0 -19.5%29'/%3E%3Cellipse cx='-6.5' cy='11.0' rx='7.6' ry='9.2' transform='rotate%28-20 -6.5 11.0%29'/%3E%3Cellipse cx='-6.5' cy='85.0' rx='7.6' ry='9.2' transform='rotate%28-20 -6.5 85.0%29'/%3E%3Cellipse cx='11.0' cy='-6.5' rx='7.6' ry='9.2' transform='rotate%2870 11.0 -6.5%29'/%3E%3Cellipse cx='85.0' cy='-6.5' rx='7.6' ry='9.2' transform='rotate%2870 85.0 -6.5%29'/%3E%3Cellipse cx='6.5' cy='11.0' rx='7.6' ry='9.2' transform='rotate%28-20 6.5 11.0%29'/%3E%3Cellipse cx='6.5' cy='85.0' rx='7.6' ry='9.2' transform='rotate%28-20 6.5 85.0%29'/%3E%3Cellipse cx='11.0' cy='6.5' rx='7.6' ry='9.2' transform='rotate%2870 11.0 6.5%29'/%3E%3Cellipse cx='85.0' cy='6.5' rx='7.6' ry='9.2' transform='rotate%2870 85.0 6.5%29'/%3E%3Cellipse cx='19.5' cy='11.0' rx='7.6' ry='9.2' transform='rotate%28-20 19.5 11.0%29'/%3E%3Cellipse cx='19.5' cy='85.0' rx='7.6' ry='9.2' transform='rotate%28-20 19.5 85.0%29'/%3E%3Cellipse cx='11.0' cy='19.5' rx='7.6' ry='9.2' transform='rotate%2870 11.0 19.5%29'/%3E%3Cellipse cx='85.0' cy='19.5' rx='7.6' ry='9.2' transform='rotate%2870 85.0 19.5%29'/%3E%3Cellipse cx='32.5' cy='11.0' rx='7.6' ry='9.2' transform='rotate%28-20 32.5 11.0%29'/%3E%3Cellipse cx='32.5' cy='85.0' rx='7.6' ry='9.2' transform='rotate%28-20 32.5 85.0%29'/%3E%3Cellipse cx='11.0' cy='32.5' rx='7.6' ry='9.2' transform='rotate%2870 11.0 32.5%29'/%3E%3Cellipse cx='85.0' cy='32.5' rx='7.6' ry='9.2' transform='rotate%2870 85.0 32.5%29'/%3E%3Cellipse cx='45.5' cy='11.0' rx='7.6' ry='9.2' transform='rotate%28-20 45.5 11.0%29'/%3E%3Cellipse cx='45.5' cy='85.0' rx='7.6' ry='9.2' transform='rotate%28-20 45.5 85.0%29'/%3E%3Cellipse cx='11.0' cy='45.5' rx='7.6' ry='9.2' transform='rotate%2870 11.0 45.5%29'/%3E%3Cellipse cx='85.0' cy='45.5' rx='7.6' ry='9.2' transform='rotate%2870 85.0 45.5%29'/%3E%3Cellipse cx='58.5' cy='11.0' rx='7.6' ry='9.2' transform='rotate%28-20 58.5 11.0%29'/%3E%3Cellipse cx='58.5' cy='85.0' rx='7.6' ry='9.2' transform='rotate%28-20 58.5 85.0%29'/%3E%3Cellipse cx='11.0' cy='58.5' rx='7.6' ry='9.2' transform='rotate%2870 11.0 58.5%29'/%3E%3Cellipse cx='85.0' cy='58.5' rx='7.6' ry='9.2' transform='rotate%2870 85.0 58.5%29'/%3E%3Cellipse cx='71.5' cy='11.0' rx='7.6' ry='9.2' transform='rotate%28-20 71.5 11.0%29'/%3E%3Cellipse cx='71.5' cy='85.0' rx='7.6' ry='9.2' transform='rotate%28-20 71.5 85.0%29'/%3E%3Cellipse cx='11.0' cy='71.5' rx='7.6' ry='9.2' transform='rotate%2870 11.0 71.5%29'/%3E%3Cellipse cx='85.0' cy='71.5' rx='7.6' ry='9.2' transform='rotate%2870 85.0 71.5%29'/%3E%3Cellipse cx='84.5' cy='11.0' rx='7.6' ry='9.2' transform='rotate%28-20 84.5 11.0%29'/%3E%3Cellipse cx='84.5' cy='85.0' rx='7.6' ry='9.2' transform='rotate%28-20 84.5 85.0%29'/%3E%3Cellipse cx='11.0' cy='84.5' rx='7.6' ry='9.2' transform='rotate%2870 11.0 84.5%29'/%3E%3Cellipse cx='85.0' cy='84.5' rx='7.6' ry='9.2' transform='rotate%2870 85.0 84.5%29'/%3E%3Cellipse cx='97.5' cy='11.0' rx='7.6' ry='9.2' transform='rotate%28-20 97.5 11.0%29'/%3E%3Cellipse cx='97.5' cy='85.0' rx='7.6' ry='9.2' transform='rotate%28-20 97.5 85.0%29'/%3E%3Cellipse cx='11.0' cy='97.5' rx='7.6' ry='9.2' transform='rotate%2870 11.0 97.5%29'/%3E%3Cellipse cx='85.0' cy='97.5' rx='7.6' ry='9.2' transform='rotate%2870 85.0 97.5%29'/%3E%3Cellipse cx='110.5' cy='11.0' rx='7.6' ry='9.2' transform='rotate%28-20 110.5 11.0%29'/%3E%3Cellipse cx='110.5' cy='85.0' rx='7.6' ry='9.2' transform='rotate%28-20 110.5 85.0%29'/%3E%3Cellipse cx='11.0' cy='110.5' rx='7.6' ry='9.2' transform='rotate%2870 11.0 110.5%29'/%3E%3Cellipse cx='85.0' cy='110.5' rx='7.6' ry='9.2' transform='rotate%2870 85.0 110.5%29'/%3E%3Cellipse cx='123.5' cy='11.0' rx='7.6' ry='9.2' transform='rotate%28-20 123.5 11.0%29'/%3E%3Cellipse cx='123.5' cy='85.0' rx='7.6' ry='9.2' transform='rotate%28-20 123.5 85.0%29'/%3E%3Cellipse cx='11.0' cy='123.5' rx='7.6' ry='9.2' transform='rotate%2870 11.0 123.5%29'/%3E%3Cellipse cx='85.0' cy='123.5' rx='7.6' ry='9.2' transform='rotate%2870 85.0 123.5%29'/%3E%3C/g%3E%3Cg fill='none' stroke='%23b5b0a6' stroke-width='1.3' stroke-linecap='round'%3E%3Cpath d='M-25.7 14.6A7.6 9.2 0 0 0 -16.5 19.4' transform='rotate%28-20 -19.5 11.0%29'/%3E%3Cpath d='M-25.7 88.6A7.6 9.2 0 0 0 -16.5 93.4' transform='rotate%28-20 -19.5 85.0%29'/%3E%3Cpath d='M4.8 -15.9A7.6 9.2 0 0 0 14.0 -11.1' transform='rotate%2870 11.0 -19.5%29'/%3E%3Cpath d='M78.8 -15.9A7.6 9.2 0 0 0 88.0 -11.1' transform='rotate%2870 85.0 -19.5%29'/%3E%3Cpath d='M-12.7 14.6A7.6 9.2 0 0 0 -3.5 19.4' transform='rotate%28-20 -6.5 11.0%29'/%3E%3Cpath d='M-12.7 88.6A7.6 9.2 0 0 0 -3.5 93.4' transform='rotate%28-20 -6.5 85.0%29'/%3E%3Cpath d='M4.8 -2.9A7.6 9.2 0 0 0 14.0 1.9000000000000004' transform='rotate%2870 11.0 -6.5%29'/%3E%3Cpath d='M78.8 -2.9A7.6 9.2 0 0 0 88.0 1.9000000000000004' transform='rotate%2870 85.0 -6.5%29'/%3E%3Cpath d='M0.2999999999999998 14.6A7.6 9.2 0 0 0 9.5 19.4' transform='rotate%28-20 6.5 11.0%29'/%3E%3Cpath d='M0.2999999999999998 88.6A7.6 9.2 0 0 0 9.5 93.4' transform='rotate%28-20 6.5 85.0%29'/%3E%3Cpath d='M4.8 10.1A7.6 9.2 0 0 0 14.0 14.9' transform='rotate%2870 11.0 6.5%29'/%3E%3Cpath d='M78.8 10.1A7.6 9.2 0 0 0 88.0 14.9' transform='rotate%2870 85.0 6.5%29'/%3E%3Cpath d='M13.3 14.6A7.6 9.2 0 0 0 22.5 19.4' transform='rotate%28-20 19.5 11.0%29'/%3E%3Cpath d='M13.3 88.6A7.6 9.2 0 0 0 22.5 93.4' transform='rotate%28-20 19.5 85.0%29'/%3E%3Cpath d='M4.8 23.1A7.6 9.2 0 0 0 14.0 27.9' transform='rotate%2870 11.0 19.5%29'/%3E%3Cpath d='M78.8 23.1A7.6 9.2 0 0 0 88.0 27.9' transform='rotate%2870 85.0 19.5%29'/%3E%3Cpath d='M26.3 14.6A7.6 9.2 0 0 0 35.5 19.4' transform='rotate%28-20 32.5 11.0%29'/%3E%3Cpath d='M26.3 88.6A7.6 9.2 0 0 0 35.5 93.4' transform='rotate%28-20 32.5 85.0%29'/%3E%3Cpath d='M4.8 36.1A7.6 9.2 0 0 0 14.0 40.9' transform='rotate%2870 11.0 32.5%29'/%3E%3Cpath d='M78.8 36.1A7.6 9.2 0 0 0 88.0 40.9' transform='rotate%2870 85.0 32.5%29'/%3E%3Cpath d='M39.3 14.6A7.6 9.2 0 0 0 48.5 19.4' transform='rotate%28-20 45.5 11.0%29'/%3E%3Cpath d='M39.3 88.6A7.6 9.2 0 0 0 48.5 93.4' transform='rotate%28-20 45.5 85.0%29'/%3E%3Cpath d='M4.8 49.1A7.6 9.2 0 0 0 14.0 53.9' transform='rotate%2870 11.0 45.5%29'/%3E%3Cpath d='M78.8 49.1A7.6 9.2 0 0 0 88.0 53.9' transform='rotate%2870 85.0 45.5%29'/%3E%3Cpath d='M52.3 14.6A7.6 9.2 0 0 0 61.5 19.4' transform='rotate%28-20 58.5 11.0%29'/%3E%3Cpath d='M52.3 88.6A7.6 9.2 0 0 0 61.5 93.4' transform='rotate%28-20 58.5 85.0%29'/%3E%3Cpath d='M4.8 62.1A7.6 9.2 0 0 0 14.0 66.9' transform='rotate%2870 11.0 58.5%29'/%3E%3Cpath d='M78.8 62.1A7.6 9.2 0 0 0 88.0 66.9' transform='rotate%2870 85.0 58.5%29'/%3E%3Cpath d='M65.3 14.6A7.6 9.2 0 0 0 74.5 19.4' transform='rotate%28-20 71.5 11.0%29'/%3E%3Cpath d='M65.3 88.6A7.6 9.2 0 0 0 74.5 93.4' transform='rotate%28-20 71.5 85.0%29'/%3E%3Cpath d='M4.8 75.1A7.6 9.2 0 0 0 14.0 79.9' transform='rotate%2870 11.0 71.5%29'/%3E%3Cpath d='M78.8 75.1A7.6 9.2 0 0 0 88.0 79.9' transform='rotate%2870 85.0 71.5%29'/%3E%3Cpath d='M78.3 14.6A7.6 9.2 0 0 0 87.5 19.4' transform='rotate%28-20 84.5 11.0%29'/%3E%3Cpath d='M78.3 88.6A7.6 9.2 0 0 0 87.5 93.4' transform='rotate%28-20 84.5 85.0%29'/%3E%3Cpath d='M4.8 88.1A7.6 9.2 0 0 0 14.0 92.9' transform='rotate%2870 11.0 84.5%29'/%3E%3Cpath d='M78.8 88.1A7.6 9.2 0 0 0 88.0 92.9' transform='rotate%2870 85.0 84.5%29'/%3E%3Cpath d='M91.3 14.6A7.6 9.2 0 0 0 100.5 19.4' transform='rotate%28-20 97.5 11.0%29'/%3E%3Cpath d='M91.3 88.6A7.6 9.2 0 0 0 100.5 93.4' transform='rotate%28-20 97.5 85.0%29'/%3E%3Cpath d='M4.8 101.1A7.6 9.2 0 0 0 14.0 105.9' transform='rotate%2870 11.0 97.5%29'/%3E%3Cpath d='M78.8 101.1A7.6 9.2 0 0 0 88.0 105.9' transform='rotate%2870 85.0 97.5%29'/%3E%3Cpath d='M104.3 14.6A7.6 9.2 0 0 0 113.5 19.4' transform='rotate%28-20 110.5 11.0%29'/%3E%3Cpath d='M104.3 88.6A7.6 9.2 0 0 0 113.5 93.4' transform='rotate%28-20 110.5 85.0%29'/%3E%3Cpath d='M4.8 114.1A7.6 9.2 0 0 0 14.0 118.9' transform='rotate%2870 11.0 110.5%29'/%3E%3Cpath d='M78.8 114.1A7.6 9.2 0 0 0 88.0 118.9' transform='rotate%2870 85.0 110.5%29'/%3E%3Cpath d='M117.3 14.6A7.6 9.2 0 0 0 126.5 19.4' transform='rotate%28-20 123.5 11.0%29'/%3E%3Cpath d='M117.3 88.6A7.6 9.2 0 0 0 126.5 93.4' transform='rotate%28-20 123.5 85.0%29'/%3E%3Cpath d='M4.8 127.1A7.6 9.2 0 0 0 14.0 131.9' transform='rotate%2870 11.0 123.5%29'/%3E%3Cpath d='M78.8 127.1A7.6 9.2 0 0 0 88.0 131.9' transform='rotate%2870 85.0 123.5%29'/%3E%3C/g%3E%3Cpath fill='none' stroke='%235f5a52' stroke-width='1.4' stroke-linecap='round' d='M-17.3 0.40000000000000036l2.8 2.8M-14.5 0.40000000000000036l-2.8 2.8M-24.5 18.8l2.8 2.8M-21.7 18.8l-2.8 2.8M-17.3 74.4l2.8 2.8M-14.5 74.4l-2.8 2.8M-24.5 92.8l2.8 2.8M-21.7 92.8l-2.8 2.8M0.40000000000000036 -24.5l2.8 2.8M0.40000000000000036 -21.7l2.8 -2.8M18.8 -17.3l2.8 2.8M18.8 -14.5l2.8 -2.8M74.4 -24.5l2.8 2.8M74.4 -21.7l2.8 -2.8M92.8 -17.3l2.8 2.8M92.8 -14.5l2.8 -2.8M-4.3 0.40000000000000036l2.8 2.8M-1.5 0.40000000000000036l-2.8 2.8M-11.5 18.8l2.8 2.8M-8.7 18.8l-2.8 2.8M-4.3 74.4l2.8 2.8M-1.5 74.4l-2.8 2.8M-11.5 92.8l2.8 2.8M-8.7 92.8l-2.8 2.8M0.40000000000000036 -11.5l2.8 2.8M0.40000000000000036 -8.7l2.8 -2.8M18.8 -4.3l2.8 2.8M18.8 -1.5l2.8 -2.8M74.4 -11.5l2.8 2.8M74.4 -8.7l2.8 -2.8M92.8 -4.3l2.8 2.8M92.8 -1.5l2.8 -2.8M8.7 0.40000000000000036l2.8 2.8M11.5 0.40000000000000036l-2.8 2.8M1.5 18.8l2.8 2.8M4.3 18.8l-2.8 2.8M8.7 74.4l2.8 2.8M11.5 74.4l-2.8 2.8M1.5 92.8l2.8 2.8M4.3 92.8l-2.8 2.8M0.40000000000000036 1.5l2.8 2.8M0.40000000000000036 4.3l2.8 -2.8M18.8 8.7l2.8 2.8M18.8 11.5l2.8 -2.8M74.4 1.5l2.8 2.8M74.4 4.3l2.8 -2.8M92.8 8.7l2.8 2.8M92.8 11.5l2.8 -2.8M21.7 0.40000000000000036l2.8 2.8M24.5 0.40000000000000036l-2.8 2.8M14.5 18.8l2.8 2.8M17.3 18.8l-2.8 2.8M21.7 74.4l2.8 2.8M24.5 74.4l-2.8 2.8M14.5 92.8l2.8 2.8M17.3 92.8l-2.8 2.8M0.40000000000000036 14.5l2.8 2.8M0.40000000000000036 17.3l2.8 -2.8M18.8 21.7l2.8 2.8M18.8 24.5l2.8 -2.8M74.4 14.5l2.8 2.8M74.4 17.3l2.8 -2.8M92.8 21.7l2.8 2.8M92.8 24.5l2.8 -2.8M34.7 0.40000000000000036l2.8 2.8M37.5 0.40000000000000036l-2.8 2.8M27.5 18.8l2.8 2.8M30.3 18.8l-2.8 2.8M34.7 74.4l2.8 2.8M37.5 74.4l-2.8 2.8M27.5 92.8l2.8 2.8M30.3 92.8l-2.8 2.8M0.40000000000000036 27.5l2.8 2.8M0.40000000000000036 30.3l2.8 -2.8M18.8 34.7l2.8 2.8M18.8 37.5l2.8 -2.8M74.4 27.5l2.8 2.8M74.4 30.3l2.8 -2.8M92.8 34.7l2.8 2.8M92.8 37.5l2.8 -2.8M47.7 0.40000000000000036l2.8 2.8M50.5 0.40000000000000036l-2.8 2.8M40.5 18.8l2.8 2.8M43.3 18.8l-2.8 2.8M47.7 74.4l2.8 2.8M50.5 74.4l-2.8 2.8M40.5 92.8l2.8 2.8M43.3 92.8l-2.8 2.8M0.40000000000000036 40.5l2.8 2.8M0.40000000000000036 43.3l2.8 -2.8M18.8 47.7l2.8 2.8M18.8 50.5l2.8 -2.8M74.4 40.5l2.8 2.8M74.4 43.3l2.8 -2.8M92.8 47.7l2.8 2.8M92.8 50.5l2.8 -2.8M60.7 0.40000000000000036l2.8 2.8M63.5 0.40000000000000036l-2.8 2.8M53.5 18.8l2.8 2.8M56.3 18.8l-2.8 2.8M60.7 74.4l2.8 2.8M63.5 74.4l-2.8 2.8M53.5 92.8l2.8 2.8M56.3 92.8l-2.8 2.8M0.40000000000000036 53.5l2.8 2.8M0.40000000000000036 56.3l2.8 -2.8M18.8 60.7l2.8 2.8M18.8 63.5l2.8 -2.8M74.4 53.5l2.8 2.8M74.4 56.3l2.8 -2.8M92.8 60.7l2.8 2.8M92.8 63.5l2.8 -2.8M73.7 0.40000000000000036l2.8 2.8M76.5 0.40000000000000036l-2.8 2.8M66.5 18.8l2.8 2.8M69.3 18.8l-2.8 2.8M73.7 74.4l2.8 2.8M76.5 74.4l-2.8 2.8M66.5 92.8l2.8 2.8M69.3 92.8l-2.8 2.8M0.40000000000000036 66.5l2.8 2.8M0.40000000000000036 69.3l2.8 -2.8M18.8 73.7l2.8 2.8M18.8 76.5l2.8 -2.8M74.4 66.5l2.8 2.8M74.4 69.3l2.8 -2.8M92.8 73.7l2.8 2.8M92.8 76.5l2.8 -2.8M86.7 0.40000000000000036l2.8 2.8M89.5 0.40000000000000036l-2.8 2.8M79.5 18.8l2.8 2.8M82.3 18.8l-2.8 2.8M86.7 74.4l2.8 2.8M89.5 74.4l-2.8 2.8M79.5 92.8l2.8 2.8M82.3 92.8l-2.8 2.8M0.40000000000000036 79.5l2.8 2.8M0.40000000000000036 82.3l2.8 -2.8M18.8 86.7l2.8 2.8M18.8 89.5l2.8 -2.8M74.4 79.5l2.8 2.8M74.4 82.3l2.8 -2.8M92.8 86.7l2.8 2.8M92.8 89.5l2.8 -2.8M99.7 0.40000000000000036l2.8 2.8M102.5 0.40000000000000036l-2.8 2.8M92.5 18.8l2.8 2.8M95.3 18.8l-2.8 2.8M99.7 74.4l2.8 2.8M102.5 74.4l-2.8 2.8M92.5 92.8l2.8 2.8M95.3 92.8l-2.8 2.8M0.40000000000000036 92.5l2.8 2.8M0.40000000000000036 95.3l2.8 -2.8M18.8 99.7l2.8 2.8M18.8 102.5l2.8 -2.8M74.4 92.5l2.8 2.8M74.4 95.3l2.8 -2.8M92.8 99.7l2.8 2.8M92.8 102.5l2.8 -2.8M112.7 0.40000000000000036l2.8 2.8M115.5 0.40000000000000036l-2.8 2.8M105.5 18.8l2.8 2.8M108.3 18.8l-2.8 2.8M112.7 74.4l2.8 2.8M115.5 74.4l-2.8 2.8M105.5 92.8l2.8 2.8M108.3 92.8l-2.8 2.8M0.40000000000000036 105.5l2.8 2.8M0.40000000000000036 108.3l2.8 -2.8M18.8 112.7l2.8 2.8M18.8 115.5l2.8 -2.8M74.4 105.5l2.8 2.8M74.4 108.3l2.8 -2.8M92.8 112.7l2.8 2.8M92.8 115.5l2.8 -2.8M125.7 0.40000000000000036l2.8 2.8M128.5 0.40000000000000036l-2.8 2.8M118.5 18.8l2.8 2.8M121.3 18.8l-2.8 2.8M125.7 74.4l2.8 2.8M128.5 74.4l-2.8 2.8M118.5 92.8l2.8 2.8M121.3 92.8l-2.8 2.8M0.40000000000000036 118.5l2.8 2.8M0.40000000000000036 121.3l2.8 -2.8M18.8 125.7l2.8 2.8M18.8 128.5l2.8 -2.8M74.4 118.5l2.8 2.8M74.4 121.3l2.8 -2.8M92.8 125.7l2.8 2.8M92.8 128.5l2.8 -2.8'/%3E%3C/svg%3E");
+  border-image-slice: 22;
+  border-image-width: 22px;
+  border-image-outset: 15px;
+  border-image-repeat: round;
+  border-radius: 4px;
   background:
     repeating-conic-gradient(var(--tile-a) 0 25%, var(--tile-b) 0 50%) 0 0 / calc(200% / var(--size)) calc(200% / var(--size));
   touch-action: none;
 }
 
+/* From 20 points the board takes a faint burgundy tint, with the darker music */
+.board::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--burgundy);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.5s ease;
+}
+
+[data-mood="sinister"] .board::after {
+  opacity: 0.1;
+}
+
 /* Every piece is one cell, moved with transform so CSS can animate it */
 .segment,
-.food {
+.food,
+.hole {
   position: absolute;
   inset: 0 auto auto 0;
   width: calc(100% / var(--size));
@@ -103,46 +218,151 @@ h1 {
 }
 
 .segment {
-  padding: 1.5px;
+  --w: 0.84;
+  --from-tail: calc(var(--len) - 1 - var(--i));
+  --taper: clamp(0, (4 - var(--from-tail)) / 4, 1);
+  z-index: calc(1000 - var(--i));
   transition: transform var(--speed) linear;
 }
 
+/* Each piece is a capsule from its own square to the piece in front, so the body is one tube */
 .segment::before {
+  --scale: color-mix(in oklch, var(--olive), black 20%);
+  --tile: calc(50% / (1 + var(--w)));
   content: "";
-  display: block;
-  height: 100%;
-  border-radius: 30%;
-  background: var(--olive);
-}
-
-.segment:nth-child(even)::before {
-  background: color-mix(in oklch, var(--olive), var(--olive-light) 35%);
+  position: absolute;
+  left: calc(50% - var(--w) * 50%);
+  top: calc(50% - var(--w) * 50%);
+  width: calc(100% + var(--w) * 100%);
+  height: calc(var(--w) * 100%);
+  border-radius: 999px;
+  transform-origin: calc(var(--w) / (2 + 2 * var(--w)) * 100%) 50%;
+  rotate: var(--a);
+  scale: 1 calc(1 - var(--taper) * 0.45);
+  transition: rotate var(--speed) linear;
+  background:
+    radial-gradient(circle at 0 25%, transparent 46%, var(--scale) 50% 58%, transparent 62%) 0 0 / var(--tile) 50%,
+    radial-gradient(circle at 50% 75%, transparent 46%, var(--scale) 50% 58%, transparent 62%) 0 0 / var(--tile) 50%,
+    var(--olive);
 }
 
 .head {
-  z-index: 2;
+  z-index: 1001;
 }
 
-.head::before {
-  border-radius: 40%;
-  background: var(--olive);
+/* Rattle past the tip of the tail, shaking now and then */
+.segment.tail::after {
+  content: "";
+  position: absolute;
+  inset: 24% 10%;
+  border-radius: 45%;
+  background: repeating-linear-gradient(90deg, var(--burgundy) 0 21%, color-mix(in oklch, var(--burgundy), black 35%) 21% 27%);
+  box-shadow: 0 0 6px 1px color-mix(in oklch, var(--burgundy), transparent 55%);
+  transform: rotate(var(--a)) translateX(-92%);
+  transition: transform var(--speed) linear;
+  animation:
+    rattle 2.2s ease-in-out infinite,
+    rattle-glow 1.4s ease-in-out infinite alternate;
 }
 
-/* Eyes, turned to face the direction of travel */
+.rattling .segment.tail::after {
+  animation:
+    rattle-fast 60ms linear infinite alternate,
+    rattle-glow 300ms ease-in-out infinite alternate;
+}
+
+@keyframes rattle-fast {
+  from {
+    rotate: -18deg;
+  }
+  to {
+    rotate: 18deg;
+  }
+}
+
+@keyframes rattle-glow {
+  to {
+    box-shadow: 0 0 12px 3px color-mix(in oklch, var(--burgundy), transparent 35%);
+  }
+}
+
+@keyframes rattle {
+  0%,
+  70%,
+  100% {
+    rotate: 0deg;
+  }
+  74%,
+  82% {
+    rotate: 14deg;
+  }
+  78%,
+  86% {
+    rotate: -14deg;
+  }
+  90% {
+    rotate: 0deg;
+  }
+}
+
+/* Head: a viper's spade, widest at the jaw and tapering to a rounded snout */
+.head::before,
 .head::after {
   content: "";
   position: absolute;
-  inset: 1.5px;
-  rotate: var(--angle);
+  inset: -14% -30% -14% -6%;
+  width: auto;
+  height: auto;
+  transform-origin: 41.7% 50%;
+  rotate: var(--a);
+  scale: 1;
   transition: rotate 120ms ease-out;
+}
+
+.head::before {
+  border-radius: 0;
+  clip-path: polygon(0 24%, 14% 6%, 36% 0, 56% 4%, 74% 14%, 88% 28%, 97% 42%, 100% 50%, 97% 58%, 88% 72%, 74% 86%, 56% 96%, 36% 100%, 14% 94%, 0 76%);
+  background: var(--olive);
+}
+
+/* Eyes on the sides: amber irises with slit pupils, brow ridges and two nostrils */
+.head::after {
+  --iris: oklch(0.8 0.15 85);
+  --pupil: oklch(0.16 0.02 30);
+  --brow: color-mix(in oklch, var(--olive), black 30%);
   background:
-    radial-gradient(circle at 68% 28%, var(--cream) 0 13%, transparent 14%),
-    radial-gradient(circle at 68% 72%, var(--cream) 0 13%, transparent 14%);
+    radial-gradient(ellipse 6% 2.2% at 42% 20%, var(--pupil) 0 80%, transparent 100%),
+    radial-gradient(ellipse 6% 2.2% at 42% 80%, var(--pupil) 0 80%, transparent 100%),
+    radial-gradient(ellipse 8.5% 8.5% at 42% 20%, var(--iris) 0 80%, transparent 100%),
+    radial-gradient(ellipse 8.5% 8.5% at 42% 80%, var(--iris) 0 80%, transparent 100%),
+    radial-gradient(ellipse 13% 6% at 40% 12%, var(--brow) 0 70%, transparent 100%),
+    radial-gradient(ellipse 13% 6% at 40% 88%, var(--brow) 0 70%, transparent 100%),
+    radial-gradient(ellipse 1.8% 2.4% at 90% 43%, var(--pupil) 0 80%, transparent 100%),
+    radial-gradient(ellipse 1.8% 2.4% at 90% 57%, var(--pupil) 0 80%, transparent 100%);
+}
+
+/* The eyes blaze each time the snake eats: the irises flash near-white gold under a layered glow */
+@property --iris {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(0.8 0.15 85);
+}
+
+.ate .head::after {
+  animation: eye-glow 1.2s ease-out;
+}
+
+@keyframes eye-glow {
+  0%,
+  40% {
+    --iris: oklch(0.98 0.09 95);
+    filter: drop-shadow(0 0 2px oklch(0.99 0.03 95)) drop-shadow(0 0 6px oklch(0.92 0.18 92)) drop-shadow(0 0 14px oklch(0.86 0.19 86)) drop-shadow(0 0 28px oklch(0.8 0.18 78)) brightness(2.4);
+  }
 }
 
 .food {
   z-index: 1;
-  padding: 3px;
+  padding: 1px;
 }
 
 .food::before {
@@ -151,12 +371,338 @@ h1 {
   height: 100%;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, color-mix(in oklch, var(--burgundy), white 45%), var(--burgundy) 60%);
+  box-shadow: 0 0 10px 2px color-mix(in oklch, var(--burgundy), transparent 45%);
   animation: pulse 900ms ease-in-out infinite alternate;
 }
 
 @keyframes pulse {
+  from {
+    scale: 1.12;
+    box-shadow: 0 0 14px 4px color-mix(in oklch, var(--burgundy), transparent 35%);
+  }
   to {
-    scale: 0.78;
+    scale: 0.88;
+  }
+}
+
+/* Burrows from 20 points: a dirt rim, a dark hole, and eyes that glint now and then */
+.hole::before {
+  content: "";
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse 9% 7% at 38% 46%, oklch(0.85 0.15 90) 0 70%, transparent 100%),
+    radial-gradient(ellipse 9% 7% at 62% 46%, oklch(0.85 0.15 90) 0 70%, transparent 100%),
+    radial-gradient(ellipse 46% 40% at 50% 50%, oklch(0.12 0.02 40) 0 85%, transparent 100%),
+    radial-gradient(ellipse 50% 46% at 50% 50%, oklch(0.42 0.05 60) 0 80%, transparent 100%);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+  animation: glint 5s var(--glint-delay) infinite;
+}
+
+/* A burrow that just moved digs itself open */
+.hole.dug {
+  animation: dig 340ms cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+
+@keyframes dig {
+  from {
+    scale: 0;
+    opacity: 0;
+  }
+}
+
+/* From 30 points burrows grow: they rumble for a few moves, swell to cover the squares around them, then shrink back */
+.hole::before {
+  transition: scale 380ms cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+.hole[data-size="growing"]::before {
+  scale: 1.2;
+  animation:
+    glint 5s var(--glint-delay) infinite,
+    quake 70ms linear infinite alternate;
+}
+
+.hole[data-size="big"]::before {
+  scale: 2.2;
+}
+
+@keyframes quake {
+  from {
+    translate: -7% 0;
+  }
+  to {
+    translate: 7% 0;
+  }
+}
+
+/* A burrow rumbles before a mongoose runs out of it */
+.hole[data-warn]::before {
+  animation: rumble 70ms linear infinite alternate;
+}
+
+@keyframes rumble {
+  from {
+    translate: -6% 0;
+    scale: 1.1;
+  }
+  to {
+    translate: 6% 0;
+    scale: 1.2;
+  }
+}
+
+/* From 40 points mongooses run across the board */
+.runner {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: 1400;
+  width: calc(100% / var(--size));
+  height: calc(100% / var(--size));
+  transform: translate(calc(var(--x) * 100%), calc(var(--y) * 100%));
+  transition: transform var(--speed) linear;
+  pointer-events: none;
+}
+
+.runner .turn {
+  position: absolute;
+  inset: 0;
+  transform: rotate(var(--r)) scaleX(var(--flip));
+}
+
+.runner .m-fur {
+  left: -170%;
+  top: 2%;
+  width: 270%;
+  height: 93%;
+  animation:
+    pop-in 220ms cubic-bezier(0.3, 1.6, 0.5, 1),
+    trot 130ms ease-in-out infinite alternate;
+}
+
+@keyframes pop-in {
+  from {
+    scale: 0.2;
+    opacity: 0;
+  }
+}
+
+@keyframes trot {
+  to {
+    translate: 0 -8%;
+  }
+}
+
+/* Running up or down: the mongoose seen from above */
+.runner .top > i {
+  position: absolute;
+  display: block;
+  animation: pop-in 220ms cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.top .t-head {
+  left: 24%;
+  top: -14%;
+  width: 52%;
+  height: 64%;
+  z-index: 2;
+  clip-path: polygon(50% 0, 64% 16%, 80% 44%, 86% 70%, 76% 92%, 50% 100%, 24% 92%, 14% 70%, 20% 44%, 36% 16%);
+  background:
+    radial-gradient(ellipse 9% 5% at 50% 4%, oklch(0.2 0.03 20) 0 80%, transparent 100%),
+    radial-gradient(ellipse 7% 6% at 34% 46%, oklch(0.1 0.02 30) 0 80%, transparent 100%),
+    radial-gradient(ellipse 7% 6% at 66% 46%, oklch(0.1 0.02 30) 0 80%, transparent 100%),
+    radial-gradient(ellipse 12% 9% at 17% 80%, var(--fur-dark) 0 80%, transparent 100%),
+    radial-gradient(ellipse 12% 9% at 83% 80%, var(--fur-dark) 0 80%, transparent 100%),
+    var(--grizzle),
+    var(--fur);
+}
+
+.top .t-body {
+  left: 17%;
+  top: 30%;
+  width: 66%;
+  height: 160%;
+  z-index: 1;
+  border-radius: 50% / 42%;
+  background:
+    linear-gradient(90deg, transparent 40%, color-mix(in oklch, var(--fur-dark), transparent 45%) 50%, transparent 60%),
+    var(--grizzle),
+    var(--fur);
+}
+
+.top .t-tail {
+  left: 37%;
+  top: 172%;
+  width: 26%;
+  height: 120%;
+  clip-path: polygon(0 0, 100% 0, 78% 70%, 50% 100%, 22% 70%);
+  background:
+    linear-gradient(transparent 62%, var(--fur-dark) 78%),
+    var(--grizzle),
+    var(--fur);
+  transform-origin: 50% 0;
+  animation:
+    pop-in 220ms cubic-bezier(0.3, 1.6, 0.5, 1),
+    tail-wag 260ms ease-in-out infinite alternate;
+}
+
+@keyframes tail-wag {
+  from {
+    rotate: -10deg;
+  }
+  to {
+    rotate: 10deg;
+  }
+}
+
+.top .t-leg {
+  width: 20%;
+  height: 26%;
+  border-radius: 50%;
+  background: var(--fur-dark);
+  transform-origin: 50% 50%;
+  animation:
+    pop-in 220ms cubic-bezier(0.3, 1.6, 0.5, 1),
+    paddle 130ms ease-in-out infinite alternate;
+}
+
+.top .t-leg:nth-child(2) {
+  left: 4%;
+  top: 44%;
+}
+
+.top .t-leg:nth-child(3) {
+  right: 4%;
+  top: 44%;
+  animation-delay: 0s, -130ms;
+}
+
+.top .t-leg:nth-child(4) {
+  left: 6%;
+  top: 150%;
+  animation-delay: 0s, -130ms;
+}
+
+.top .t-leg:nth-child(5) {
+  right: 6%;
+  top: 150%;
+}
+
+@keyframes paddle {
+  from {
+    translate: 0 -14%;
+  }
+  to {
+    translate: 0 14%;
+  }
+}
+
+.runner.gone .top {
+  opacity: 0;
+  scale: 0.3;
+  transition:
+    opacity 260ms,
+    scale 260ms;
+}
+
+.runner[data-attack] .top {
+  animation: bite 220ms ease-in-out 4;
+}
+
+.runner.gone .m-fur {
+  opacity: 0;
+  scale: 0.3;
+  transition:
+    opacity 260ms,
+    scale 260ms;
+}
+
+.runner[data-attack] .m-fur {
+  animation: bite 220ms ease-in-out 4;
+}
+
+@keyframes glint {
+  0%,
+  86%,
+  100% {
+    background-size: 0 0, 0 0, 100% 100%, 100% 100%;
+  }
+  88%,
+  96% {
+    background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+  }
+}
+
+/* A small front-facing mongoose head peeking out of the burrow */
+.hole .pop {
+  position: absolute;
+  left: -8%;
+  bottom: 34%;
+  width: 116%;
+  height: 132%;
+  transform-origin: 50% 100%;
+  transform: translateY(55%) scale(0.25);
+  opacity: 0;
+  transition:
+    transform 420ms cubic-bezier(0.3, 1.7, 0.5, 1),
+    opacity 150ms;
+  pointer-events: none;
+}
+
+.pop > i {
+  position: absolute;
+  display: block;
+}
+
+.pop .face {
+  inset: 0 6%;
+  clip-path: polygon(50% 100%, 40% 90%, 27% 70%, 16% 48%, 13% 30%, 20% 14%, 34% 4%, 50% 1%, 66% 4%, 80% 14%, 87% 30%, 84% 48%, 73% 70%, 60% 90%);
+  background:
+    radial-gradient(ellipse 9% 5.5% at 50% 93%, oklch(0.2 0.03 20) 0 80%, transparent 100%),
+    radial-gradient(ellipse 2.2% 1.8% at 41% 37%, oklch(0.95 0.02 90) 0 80%, transparent 100%),
+    radial-gradient(ellipse 2.2% 1.8% at 61% 37%, oklch(0.95 0.02 90) 0 80%, transparent 100%),
+    radial-gradient(ellipse 6% 5.5% at 39% 40%, oklch(0.1 0.02 30) 0 80%, transparent 100%),
+    radial-gradient(ellipse 6% 5.5% at 61% 40%, oklch(0.1 0.02 30) 0 80%, transparent 100%),
+    radial-gradient(ellipse 13% 9% at 37% 43%, oklch(0.28 0.03 45) 0 75%, transparent 100%),
+    radial-gradient(ellipse 13% 9% at 63% 43%, oklch(0.28 0.03 45) 0 75%, transparent 100%),
+    radial-gradient(ellipse 20% 24% at 50% 76%, var(--fur-light) 0 70%, transparent 100%),
+    var(--grizzle),
+    var(--fur);
+}
+
+.pop .ear {
+  top: 20%;
+  width: 26%;
+  height: 22%;
+  border-radius: 50% 50% 45% 45%;
+  background: radial-gradient(ellipse 45% 40% at 50% 55%, oklch(0.45 0.05 30) 0 70%, transparent 100%), var(--fur-dark);
+}
+
+.pop .ear:first-child {
+  left: 2%;
+  rotate: -24deg;
+}
+
+.pop .ear:nth-child(2) {
+  right: 2%;
+  rotate: 24deg;
+}
+
+.hole[data-out] {
+  z-index: 1500;
+}
+
+.hole[data-out] .pop {
+  transform: none;
+  opacity: 1;
+  animation: bite 220ms 480ms ease-in-out 3;
+}
+
+@keyframes bite {
+  50% {
+    translate: 12% 18%;
+    rotate: 14deg;
   }
 }
 
@@ -175,7 +721,7 @@ h1 {
 .overlay {
   position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 2000;
   display: grid;
   place-items: center;
   border: 0;
@@ -187,31 +733,329 @@ h1 {
   transition: opacity 200ms;
 }
 
-.overlay::before {
+.overlay {
+  grid-auto-flow: row;
+  align-content: center;
+  gap: 10px;
+}
+
+.overlay::after {
   white-space: pre;
   text-align: center;
   line-height: 1.6;
 }
 
-[data-state="ready"] .overlay::before {
+[data-state="ready"] .overlay::after {
   content: "Press Space or tap to start";
 }
 
-[data-state="paused"] .overlay::before {
+[data-state="paused"] .overlay::after {
   content: "Paused\a Press Space or tap to resume";
 }
 
-[data-state="over"] .overlay::before {
+[data-state="over"] .overlay::after {
   content: "Game over\a Press Space or tap to play again";
 }
 
-[data-state="playing"] .overlay {
+[data-state="over"][data-cause="mongoose"] .overlay::after {
+  content: "The mongoose got you\a Press Space or tap to play again";
+}
+
+[data-state="over"][data-cause="wire"] .overlay::after {
+  content: "Snagged on the barbed wire\a Press Space or tap to play again";
+}
+
+[data-state="playing"] .overlay,
+[data-state="caught"] .overlay {
   opacity: 0;
   pointer-events: none;
 }
 
+/* Game over: the mongoose silhouette, coloured with CSS, shaking a snake clamped across its snout */
+.defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.scene {
+  display: none;
+  position: relative;
+  width: 310px;
+  height: 196px;
+}
+
+[data-state="over"][data-cause="mongoose"] .scene {
+  display: block;
+}
+
+.scene .m-shake,
+.scene .m-snout {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.scene .m-shake {
+  transform-origin: 30% 40%;
+  animation: shake 180ms ease-in-out infinite alternate;
+}
+
+@keyframes shake {
+  to {
+    rotate: 3deg;
+  }
+}
+
+.m-fur {
+  position: absolute;
+  display: block;
+  clip-path: url(#mongoose-clip);
+  background: var(--mongoose);
+}
+
+.scene .m-fur {
+  left: 0;
+  top: 50px;
+  width: 300px;
+  height: 103px;
+}
+
+/* The upper snout is drawn again on top, so the snake sits between the jaws */
+.scene .m-snout {
+  z-index: 3;
+  clip-path: polygon(248px 40px, 310px 40px, 310px 79px, 248px 84px);
+}
+
+.scene .snake-held {
+  position: absolute;
+  left: 250px;
+  top: 60px;
+  width: 60px;
+  height: 136px;
+  z-index: 2;
+  overflow: visible;
+}
+
+.snake-held .s-body {
+  fill: none;
+  stroke: var(--olive);
+  stroke-width: 13;
+  stroke-linecap: round;
+}
+
+.snake-held .s-belly {
+  fill: none;
+  stroke: color-mix(in oklch, var(--olive), black 25%);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 4 5;
+  animation: slither 600ms linear infinite;
+}
+
+@keyframes slither {
+  to {
+    stroke-dashoffset: -18;
+  }
+}
+
+.snake-held .s-head {
+  fill: var(--olive);
+}
+
+.snake-held .s-eyes {
+  stroke: var(--cream);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.snake-held .s-dangle {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: dazed 520ms ease-in-out infinite alternate;
+}
+
+@keyframes dazed {
+  from {
+    rotate: -10deg;
+  }
+  to {
+    rotate: 10deg;
+  }
+}
+
+.snake-held .s-rattle {
+  fill: var(--burgundy);
+  filter: drop-shadow(0 0 4px color-mix(in oklch, var(--burgundy), transparent 40%));
+}
+
+.snake-held .s-rings {
+  stroke: color-mix(in oklch, var(--burgundy), black 35%);
+  stroke-width: 1.5;
+}
+
+@media (max-width: 440px) {
+  .board {
+    margin: 15px 10px;
+  }
+}
+
+@media (max-width: 440px) {
+  .scene {
+    margin: -22px -34px;
+    scale: 0.78;
+  }
+}
+
+/* Any other game over: a knocked-out snake head with X eyes and a limp tongue */
+.dead-snake {
+  display: none;
+  position: relative;
+  width: 168px;
+  height: 92px;
+  transform-origin: 30% 50%;
+  animation: daze 1.6s ease-in-out infinite alternate;
+}
+
+[data-state="over"]:not([data-cause="mongoose"]) .dead-snake {
+  display: block;
+}
+
+@keyframes daze {
+  from {
+    rotate: -5deg;
+  }
+  to {
+    rotate: 5deg;
+  }
+}
+
+.dead-snake > span {
+  position: absolute;
+  display: block;
+}
+
+.d-neck {
+  left: 0;
+  top: 27px;
+  width: 92px;
+  height: 38px;
+  border-radius: 19px;
+  background:
+    radial-gradient(circle at 0 25%, transparent 46%, color-mix(in oklch, var(--olive), black 20%) 50% 58%, transparent 62%) 0 0 / 19px 19px,
+    radial-gradient(circle at 50% 75%, transparent 46%, color-mix(in oklch, var(--olive), black 20%) 50% 58%, transparent 62%) 0 0 / 19px 19px,
+    var(--olive);
+}
+
+.d-head {
+  left: 58px;
+  top: 4px;
+  width: 98px;
+  height: 84px;
+  clip-path: polygon(0 24%, 14% 6%, 36% 0, 56% 4%, 74% 14%, 88% 28%, 97% 42%, 100% 50%, 97% 58%, 88% 72%, 74% 86%, 56% 96%, 36% 100%, 14% 94%, 0 76%);
+  background:
+    linear-gradient(45deg, transparent 40%, oklch(0.14 0.02 30) 40% 60%, transparent 60%) 44% 16% / 16% 19% no-repeat,
+    linear-gradient(-45deg, transparent 40%, oklch(0.14 0.02 30) 40% 60%, transparent 60%) 44% 16% / 16% 19% no-repeat,
+    linear-gradient(45deg, transparent 40%, oklch(0.14 0.02 30) 40% 60%, transparent 60%) 44% 84% / 16% 19% no-repeat,
+    linear-gradient(-45deg, transparent 40%, oklch(0.14 0.02 30) 40% 60%, transparent 60%) 44% 84% / 16% 19% no-repeat,
+    radial-gradient(ellipse 2.4% 3% at 90% 43%, oklch(0.16 0.02 30) 0 80%, transparent 100%),
+    radial-gradient(ellipse 2.4% 3% at 90% 57%, oklch(0.16 0.02 30) 0 80%, transparent 100%),
+    var(--olive);
+}
+
+.d-tongue {
+  left: 146px;
+  top: 46px;
+  width: 26px;
+  height: 9px;
+  background: var(--burgundy);
+  clip-path: polygon(0 30%, 66% 30%, 100% 0, 84% 50%, 100% 100%, 66% 70%, 0 70%);
+  transform-origin: 0 50%;
+  rotate: 50deg;
+}
+
+/* Caught: the head turns burgundy and thrashes before the game-over screen */
+[data-state="caught"] .head::before {
+  background: var(--burgundy);
+  animation: wobble 70ms ease-in-out infinite alternate;
+}
+
+[data-state="caught"] .head .tongue {
+  display: none;
+}
+
 [data-state="over"] .head::before {
   background: var(--burgundy);
+}
+
+/* Forked tongue: hidden on the body, flicks out of the head and turns with it */
+.tongue {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: none;
+  rotate: var(--a);
+  transition: rotate 120ms ease-out;
+  pointer-events: none;
+}
+
+.head .tongue {
+  display: block;
+}
+
+.tongue::before {
+  content: "";
+  position: absolute;
+  left: 122%;
+  top: calc(50% - 3px);
+  width: 62%;
+  height: 6px;
+  background: var(--burgundy);
+  clip-path: polygon(0 38%, 68% 38%, 100% 0, 84% 50%, 100% 100%, 68% 62%, 0 62%);
+  transform-origin: left center;
+  scale: 0 1;
+  animation: flick 1.6s ease-in-out infinite;
+}
+
+@keyframes flick {
+  0%,
+  50%,
+  100% {
+    scale: 0 1;
+  }
+  58%,
+  66% {
+    scale: 1 1;
+  }
+  72% {
+    scale: 0.45 1;
+  }
+  78%,
+  84% {
+    scale: 1 1;
+  }
+  92% {
+    scale: 0 1;
+  }
+}
+
+[data-state="over"] .head .tongue {
+  display: none;
+}
+
+/* Heading into a wall: the snake waits one step and the head wobbles */
+.edge .head::before {
+  background: color-mix(in oklch, var(--olive), var(--burgundy) 55%);
+  animation: wobble 80ms ease-in-out infinite alternate;
+}
+
+@keyframes wobble {
+  from {
+    rotate: calc(var(--a) - 10deg);
+  }
+  to {
+    rotate: calc(var(--a) + 10deg);
+  }
 }
 
 .status {
@@ -289,20 +1133,43 @@ h1 {
 }
 
 @media (pointer: coarse) {
+  body {
+    place-items: stretch center;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+
+  .game {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100dvh - 16px - max(16px, env(safe-area-inset-bottom)));
+  }
+
+  .help {
+    margin-top: auto;
+  }
+
   .pad {
     display: grid;
   }
 
-  [data-state="ready"] .overlay::before {
+  [data-state="ready"] .overlay::after {
     content: "Tap to start";
   }
 
-  [data-state="paused"] .overlay::before {
+  [data-state="paused"] .overlay::after {
     content: "Paused\a Tap to resume";
   }
 
-  [data-state="over"] .overlay::before {
+  [data-state="over"] .overlay::after {
     content: "Game over\a Tap to play again";
+  }
+
+  [data-state="over"][data-cause="mongoose"] .overlay::after {
+    content: "The mongoose got you\a Tap to play again";
+  }
+
+  [data-state="over"][data-cause="wire"] .overlay::after {
+    content: "Snagged on the barbed wire\a Tap to play again";
   }
 
   .keys {
@@ -317,7 +1184,24 @@ h1 {
   }
 
   .food::before,
-  .ate .board {
+  .ate .board,
+  .edge .head::before,
+  .hole::before,
+  .segment.tail::after,
+  .rattling .segment.tail::after,
+  .scene .m-shake,
+  .scene svg *,
+  .dead-snake,
+  .hole[data-out] .pop,
+  .hole[data-size="growing"]::before,
+  .hole[data-warn]::before,
+  .hole.dug,
+  .runner .m-fur,
+  .runner .top > i {
     animation: none;
+  }
+
+  .head .tongue {
+    display: none;
   }
 }
