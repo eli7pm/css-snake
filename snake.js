@@ -8,7 +8,7 @@ const food = document.querySelector('.food')
 const score = document.querySelector('.score')
 const status = document.querySelector('.status')
 
-let snake, dir, queue, apple, timer, speed
+let snake, dir, queue, apple, timer, speed, lastStep = 0
 let best = Number(safe(() => localStorage.getItem('css-snake-best'))) || 0
 score.dataset.best = best
 
@@ -66,7 +66,13 @@ function reset() {
   render()
 }
 
+function restartTimer() {
+  clearInterval(timer)
+  if (game.dataset.state === 'playing') timer = setInterval(tick, speed)
+}
+
 function tick() {
+  lastStep = performance.now()
   const next = queue.shift()
   if (next) dir = next
   const [dx, dy] = DIRS[dir]
@@ -87,8 +93,7 @@ function tick() {
     if (points % 5 === 0 && speed > 70) {
       speed -= 10
       game.style.setProperty('--speed', `${speed}ms`)
-      clearInterval(timer)
-      timer = setInterval(tick, speed)
+      restartTimer()
     }
   }
   render()
@@ -109,7 +114,8 @@ function play() {
   if (game.dataset.state === 'playing') return
   if (game.dataset.state !== 'paused') reset()
   setState('playing')
-  timer = setInterval(tick, speed)
+  lastStep = performance.now()
+  restartTimer()
 }
 
 function pause() {
@@ -124,7 +130,12 @@ function turn(to) {
   const [lx, ly] = DIRS[last]
   const [tx, ty] = DIRS[to]
   if (to === last || (lx + tx === 0 && ly + ty === 0)) return
-  if (queue.length < 2) queue.push(to)
+  if (queue.length >= 2) return
+  queue.push(to)
+  if (queue.length === 1 && performance.now() - lastStep >= speed / 3) {
+    tick()
+    restartTimer()
+  }
 }
 
 document.addEventListener('keydown', (e) => {
@@ -148,7 +159,7 @@ board.addEventListener('pointerup', (e) => {
   const dx = e.clientX - touch[0]
   const dy = e.clientY - touch[1]
   touch = null
-  if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 16) return
   turn(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : dy > 0 ? 'down' : 'up')
 })
 

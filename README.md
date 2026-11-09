@@ -9,7 +9,7 @@ The portfolio's deploy copies these three files to `/snake/`, so a push here goe
 ## Controls
 
 - **Keyboard:** arrow keys or WASD to move, Space or Enter to start and pause.
-- **Phones:** swipe on the board, or use the on-screen arrows.
+- **Phones:** swipe on the board (16px is enough), or use the on-screen arrows.
 - The game pauses on its own when you switch tabs.
 
 ## What CSS does
@@ -31,7 +31,7 @@ The portfolio's deploy copies these three files to `/snake/`, so a push here goe
 
 - Keeps the snake as a list of cells, moves it on a timer, and checks for walls, itself and food.
 - Writes the results back as CSS variables (`--x`, `--y`, `--angle`, `--speed`) and data attributes (`data-state`, `data-score`, `data-best`).
-- Queues up to two turns so quick key presses aren't lost, and ignores a direct reversal.
+- Turns take effect right away: pressing an arrow moves the snake one step in the new direction and restarts the timer (at most once per third of a step, so quick zigzags don't speed it up). Up to two turns queue so fast presses aren't lost, and a direct reversal is ignored.
 - Saves the best score in `localStorage`.
 
 ## Files
