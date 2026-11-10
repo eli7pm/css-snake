@@ -41,11 +41,39 @@ laugh.preload = 'auto'
 laugh.addEventListener('canplaythrough', () => (laughReady = true), { once: true })
 laugh.addEventListener('error', () => (laughReady = false))
 
+let laughBuffer = null
+let laughLoading = false
+let laughSource = null
+
+function loadLaugh() {
+  if (laughLoading || !audio) return
+  laughLoading = true
+  fetch('laugh.mp3')
+    .then((res) => (res.ok ? res.arrayBuffer() : Promise.reject(new Error(res.status))))
+    .then((data) => audio.decodeAudioData(data))
+    .then((buffer) => (laughBuffer = buffer))
+    .catch(() => {})
+}
+
 function playLaugh() {
-  if (!soundOn || !laughReady) return false
+  if (!soundOn) return false
+  if (laughBuffer && audio) {
+    laughSource = audio.createBufferSource()
+    laughSource.buffer = laughBuffer
+    laughSource.connect(audio.destination)
+    laughSource.start()
+    return true
+  }
+  if (!laughReady) return false
   laugh.currentTime = 0
   laugh.play().catch(() => {})
   return true
+}
+
+function stopLaugh() {
+  laugh.pause()
+  safe(() => laughSource?.stop())
+  laughSource = null
 }
 let noise = null
 
@@ -447,7 +475,7 @@ function reset(from = START_POINTS) {
   delete game.dataset.mood
   delete game.dataset.cause
   clearTimeout(caughtTimer)
-  laugh.pause()
+  stopLaugh()
   holes.forEach((h) => h.el.remove())
   holes = []
   runners.forEach((r) => r.el?.remove())
@@ -597,6 +625,7 @@ function over(cause) {
 function play() {
   audio ??= safe(() => new AudioContext())
   audio?.resume()
+  loadLaugh()
   if (game.dataset.state === 'playing' || game.dataset.state === 'caught') return
   if (game.dataset.state !== 'paused') {
     reset(game.dataset.state === 'over' ? Math.max(START_POINTS, carry) : START_POINTS)
@@ -616,7 +645,9 @@ function pause() {
   setState('paused', 'Paused')
 }
 
-const REDO_WINDOW = 0.65
+const TEST = new URLSearchParams(location.search)
+const REDO_WINDOW = TEST.get('instant') === 'off' ? 0 : 0.65
+if (TEST.get('slide') === 'off') game.classList.add('no-slide')
 
 function redoLastStep(to) {
   if (queue.length || !previous || performance.now() - lastStep > speed * REDO_WINDOW) return false

@@ -18,11 +18,13 @@ The portfolio's deploy copies these three files to `/snake/`, so a push here goe
 
 Add `?points=N` to start every game (and every Restart) at that score, for example `index.html?points=19` or `/snake/?points=40`. Speed, the sinister music, the board tint and the number of holes match that score; the snake starts at its normal length. Scores from a test start aren't saved as your best.
 
+Two more switches help pin down choppy motion on a device: `?instant=off` turns off instant turns (a turn always waits for the next step), and `?slide=off` turns off the sliding animation (the snake moves square by square). They combine with each other and with `points`, for example `?points=40&instant=off`.
+
 ## What CSS does
 
 | Part | How |
 | --- | --- |
-| Board | one `repeating-conic-gradient` draws the checkerboard; a coil of concertina wire (overlapping steel loops with small razor barbs, a small inline SVG) runs around the edge through `border-image`, pushed mostly outside the board with `border-image-outset`, and running into it ends the game with "Snagged on the barbed wire" |
+| Board | one `repeating-conic-gradient` draws the checkerboard; a coil of concertina wire (overlapping steel loops with small razor barbs, a small inline SVG) runs around the edge through `border-image`, drawn entirely outside the board, from its edge outward, with `border-image-outset`, and running into it ends the game with "Snagged on the barbed wire" |
 | Movement | each piece sits at `--x` / `--y`, placed with `transform`, so a linear `transition` as long as one step slides it to the next cell without stopping |
 | Speed | `--speed` sets the slide duration: 200 ms per step, 6 ms faster every 10 points, down to 120 ms |
 | Walls | the head wobbles and turns reddish while the snake waits at a wall |
@@ -49,7 +51,7 @@ Add `?points=N` to start every game (and every Restart) at that score, for examp
 - Makes every sound with the Web Audio API (no audio files). Browsers only allow sound after you interact, so it starts with the first game.
   - **Eating:** a short two-note chirp.
   - **Scores of 10, 20, 40, 60 and 80:** a rattle (bursts of filtered noise) instead of the chirp, while the rattle on the tail shakes fast.
-  - **Game over:** a falling tone with a low thud. When the mongoose gets you, `laugh.mp3` plays instead if that file sits next to `index.html` (bring your own clip with a license that allows it; without the file the game uses the falling tone).
+  - **Game over:** a falling tone with a low thud. When the mongoose gets you, `laugh.mp3` plays instead if that file sits next to `index.html`. It's loaded into Web Audio when a game starts, because phones won't play an `<audio>` file from a timer (bring your own clip with a license that allows it; without the file the game uses the falling tone).
   - **Reaching 20:** after the rattle, a cartoon villain sting: two short dark brass chords and a long wavering third (diminished chords on sawtooth oscillators through a closing low-pass filter).
 - Plays an original background track, generated live in `music.js`: zany cartoon funk with a 16-bit feel. FM synthesis (one oscillator modulating another, the way the Sega Genesis made sound) gives a slappy bass and brassy horn stabs over a swung drum kit, with a cartoon "boing" every four bars. It stays at 128 BPM however fast the snake gets, and pauses with the game.
 - From 20 points, food prefers tight spots: corners, squares against a wall or the body, or gaps with two sides blocked. It never picks a dead end (three sides blocked) or a square within 3 of the head, and falls back to an edge square, then anywhere free.
